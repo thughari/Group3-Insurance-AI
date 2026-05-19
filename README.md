@@ -115,7 +115,7 @@ flowchart TD
 
 ### 1. Clone the Repository
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/thughari/Group3-Insurance-AI
 cd Life-Insurance-AI
 ```
 
