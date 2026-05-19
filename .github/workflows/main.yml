@@ -1,0 +1,53 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main # Triggers on pushes to the main branch
+
+env:
+  PROJECT_ID: your-gcp-project-id # TODO: Replace with your GCP Project ID
+  REGION: asia-south1
+  REPO_NAME: app-repo
+  SERVICE_NAME: fullstack-app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Google Auth
+      id: auth
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    - name: Authorize Docker push
+      run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+    - name: Build and Push Docker image
+      run: |
+        IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest
+        docker build -t $IMAGE_NAME .
+        docker push $IMAGE_NAME
+
+    - name: Deploy to Cloud Run
+      run: |
+        IMAGE_NAME=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:latest
+        gcloud run deploy ${{ env.SERVICE_NAME }} \
+          --image $IMAGE_NAME \
+          --region ${{ env.REGION }} \
+          --allow-unauthenticated \
+          --port 7860 \
+          --min-instances 0 \
+          --set-env-vars GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
+          --set-env-vars MONGODB_URI=${{ secrets.MONGODB_URI }} \
+          --set-env-vars LANGCHAIN_TRACING_V2=${{ secrets.LANGCHAIN_TRACING_V2 }} \
+          --set-env-vars LANGCHAIN_API_KEY=${{ secrets.LANGCHAIN_API_KEY }} \
+          --set-env-vars LANGCHAIN_PROJECT=${{ secrets.LANGCHAIN_PROJECT }}
