@@ -46,7 +46,7 @@ jobs:
           --allow-unauthenticated \
           --port 7860 \
           --min-instances 0 \
-          --memory 1Gi \
+          --memory 2Gi \
           --set-env-vars GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
           --set-env-vars MONGODB_URI=${{ secrets.MONGODB_URI }} \
           --set-env-vars LANGCHAIN_TRACING_V2=${{ secrets.LANGCHAIN_TRACING_V2 }} \
