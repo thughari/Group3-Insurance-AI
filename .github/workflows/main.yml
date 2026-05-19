@@ -9,7 +9,7 @@ env:
   PROJECT_ID: gen-lang-client-0346625839
   REGION: asia-south1
   REPO_NAME: app-repo
-  SERVICE_NAME: fullstack-app
+  SERVICE_NAME: insurance-ai
 
 jobs:
   deploy:
@@ -46,6 +46,7 @@ jobs:
           --allow-unauthenticated \
           --port 7860 \
           --min-instances 0 \
+          --memory 1Gi \
           --set-env-vars GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
           --set-env-vars MONGODB_URI=${{ secrets.MONGODB_URI }} \
           --set-env-vars LANGCHAIN_TRACING_V2=${{ secrets.LANGCHAIN_TRACING_V2 }} \
