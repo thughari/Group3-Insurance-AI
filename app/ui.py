@@ -153,67 +153,67 @@ with st.sidebar:
                         })
                         st.rerun()
 
-    st.divider()
-    st.header("🎙️ Multimodal Input")
-    st.caption("Upload a voice recording or image (e.g. medical report) to chat.")
-    audio_val = st.file_uploader("🎤 Upload Voice Recording", type=["wav", "mp3", "m4a", "ogg", "webm", "flac"])
-    image_val = st.file_uploader("🖼️ Upload Image", type=["png", "jpg", "jpeg"])
-    if st.button("Submit Media", use_container_width=True):
-        if audio_val or image_val:
-            with st.spinner("Processing media..."):
-                gemini_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-                openai_key = os.getenv("OPENAI_API_KEY")
-                if not gemini_key and not openai_key:
-                    st.error("Gemini or OpenAI API key is required for Multimodal input.")
-                else:
-                    try:
-                        transcribed_text = ""
-                        # Extract raw audio bytes
-                        raw_audio = audio_val.getvalue() if audio_val else None
-                        audio_fname = getattr(audio_val, "name", "audio.wav") if audio_val else None
+    # st.divider()
+    # st.header("🎙️ Multimodal Input")
+    # st.caption("Upload a voice recording or image (e.g. medical report) to chat.")
+    # audio_val = st.file_uploader("🎤 Upload Voice Recording", type=["wav", "mp3", "m4a", "ogg", "webm", "flac"])
+    # image_val = st.file_uploader("🖼️ Upload Image", type=["png", "jpg", "jpeg"])
+    # if st.button("Submit Media", use_container_width=True):
+    #     if audio_val or image_val:
+    #         with st.spinner("Processing media..."):
+    #             gemini_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    #             openai_key = os.getenv("OPENAI_API_KEY")
+    #             if not gemini_key and not openai_key:
+    #                 st.error("Gemini or OpenAI API key is required for Multimodal input.")
+    #             else:
+    #                 try:
+    #                     transcribed_text = ""
+    #                     # Extract raw audio bytes
+    #                     raw_audio = audio_val.getvalue() if audio_val else None
+    #                     audio_fname = getattr(audio_val, "name", "audio.wav") if audio_val else None
                         
-                        if gemini_key:
-                            client = genai.Client(api_key=gemini_key)
-                            contents = ["Extract and transcribe the text from the provided image or audio. Output only the transcribed text/query."]
-                            if raw_audio:
-                                contents.append(types.Part.from_bytes(data=raw_audio, mime_type="audio/wav"))
-                            if image_val:
-                                contents.append(types.Part.from_bytes(data=image_val.getvalue(), mime_type=image_val.type))
-                            response = client.models.generate_content(model='gemini-2.5-flash', contents=contents)
-                            transcribed_text = response.text.strip()
-                        elif openai_key:
-                            from openai import OpenAI
-                            import base64
-                            client = OpenAI(api_key=openai_key)
-                            if raw_audio:
-                                audio_response = client.audio.transcriptions.create(
-                                    model="whisper-1", 
-                                    file=(audio_fname, raw_audio)
-                                )
-                                transcribed_text += audio_response.text + "\n"
-                            if image_val:
-                                base64_image = base64.b64encode(image_val.getvalue()).decode('utf-8')
-                                image_url = f"data:{image_val.type};base64,{base64_image}"
-                                response = client.chat.completions.create(
-                                    model="gpt-4o-mini",
-                                    messages=[
-                                        {
-                                            "role": "user",
-                                            "content": [
-                                                {"type": "text", "text": "Extract and transcribe the text from this image. Output only the transcribed text/query."},
-                                                {"type": "image_url", "image_url": {"url": image_url}}
-                                            ]
-                                        }
-                                    ]
-                                )
-                                transcribed_text += response.choices[0].message.content.strip()
-                            transcribed_text = transcribed_text.strip()
+    #                     if gemini_key:
+    #                         client = genai.Client(api_key=gemini_key)
+    #                         contents = ["Extract and transcribe the text from the provided image or audio. Output only the transcribed text/query."]
+    #                         if raw_audio:
+    #                             contents.append(types.Part.from_bytes(data=raw_audio, mime_type="audio/wav"))
+    #                         if image_val:
+    #                             contents.append(types.Part.from_bytes(data=image_val.getvalue(), mime_type=image_val.type))
+    #                         response = client.models.generate_content(model='gemini-2.5-flash', contents=contents)
+    #                         transcribed_text = response.text.strip()
+    #                     elif openai_key:
+    #                         from openai import OpenAI
+    #                         import base64
+    #                         client = OpenAI(api_key=openai_key)
+    #                         if raw_audio:
+    #                             audio_response = client.audio.transcriptions.create(
+    #                                 model="whisper-1", 
+    #                                 file=(audio_fname, raw_audio)
+    #                             )
+    #                             transcribed_text += audio_response.text + "\n"
+    #                         if image_val:
+    #                             base64_image = base64.b64encode(image_val.getvalue()).decode('utf-8')
+    #                             image_url = f"data:{image_val.type};base64,{base64_image}"
+    #                             response = client.chat.completions.create(
+    #                                 model="gpt-4o-mini",
+    #                                 messages=[
+    #                                     {
+    #                                         "role": "user",
+    #                                         "content": [
+    #                                             {"type": "text", "text": "Extract and transcribe the text from this image. Output only the transcribed text/query."},
+    #                                             {"type": "image_url", "image_url": {"url": image_url}}
+    #                                         ]
+    #                                     }
+    #                                 ]
+    #                             )
+    #                             transcribed_text += response.choices[0].message.content.strip()
+    #                         transcribed_text = transcribed_text.strip()
                         
-                        if transcribed_text:
-                            st.session_state.pending_prompt = transcribed_text
-                            st.rerun()
-                    except Exception as e:
-                        st.error(f"Error processing media: {e}")
+    #                     if transcribed_text:
+    #                         st.session_state.pending_prompt = transcribed_text
+    #                         st.rerun()
+    #                 except Exception as e:
+    #                     st.error(f"Error processing media: {e}")
 
     st.divider()
     st.header("📋 Active Sessions")
