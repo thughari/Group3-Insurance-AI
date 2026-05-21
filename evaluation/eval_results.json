@@ -1,0 +1,556 @@
+{
+  "timestamp": "2026-05-14T00:27:45.920165",
+  "routing_accuracy": 100.0,
+  "avg_keyword_coverage": 0.69,
+  "citation_rate": 0.16666666666666666,
+  "results": [
+    {
+      "id": "PQ-01",
+      "category": "policy_qa",
+      "question": "What is the difference between a Term Life policy and a Whole Life policy?",
+      "response": "Based on the provided documents, the main difference between a Term Life policy and a Whole Life policy is the maturity benefit. According to the LifeInsurance_Glossary_VitaLife.pdf (Page: 1), \"Term l",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": true,
+      "matched_keywords": [
+        "term",
+        "whole life",
+        "maturity",
+        "death benefit",
+        "premium"
+      ]
+    },
+    {
+      "id": "PQ-02",
+      "category": "policy_qa",
+      "question": "What are the key features of an Endowment plan versus a ULIP?",
+      "response": "I don't know the key features of an Endowment plan based on the provided documents. However, according to the LifeInsurance_ProductGuide_VitaLife.pdf (Page 3), a ULIP (Unit-Linked Insurance Plan) comb",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.6,
+      "has_citation": false,
+      "matched_keywords": [
+        "endowment",
+        "ULIP",
+        "market-linked"
+      ]
+    },
+    {
+      "id": "PQ-03",
+      "category": "policy_qa",
+      "question": "Which policy type is best suited for a 28-year-old with dependents who wants pure protection?",
+      "response": "Based on the provided context, the VitaShield Term Life plan is best suited for a 28-year-old with dependents who wants pure protection (LifeInsurance_ProductGuide_VitaLife.pdf, Page: 1). This plan pr",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": true,
+      "matched_keywords": [
+        "term life",
+        "protection",
+        "affordable",
+        "dependents"
+      ]
+    },
+    {
+      "id": "PQ-04",
+      "category": "policy_qa",
+      "question": "What riders and add-on benefits are available with VitaLife policies?",
+      "response": "According to the Riders_AddOnBenefits_VitaLife.pdf document (Page 1), VitaLife Insurance Corporation offers the following riders and add-on benefits: \n\n1. Critical Illness (CI) Rider\n2. Accidental Dea",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "rider",
+        "critical illness",
+        "accidental death",
+        "waiver of premium"
+      ]
+    },
+    {
+      "id": "PQ-05",
+      "category": "policy_qa",
+      "question": "What are the standard exclusions in a VitaLife term policy?",
+      "response": "According to the PolicyTerms_Conditions_VitaLife.pdf, Page 2, the standard exclusions in a VitaLife policy, which would apply to term policies as well, are: \n(a) Death by suicide within 12 months of p",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.5,
+      "has_citation": false,
+      "matched_keywords": [
+        "exclusion",
+        "suicide"
+      ]
+    },
+    {
+      "id": "PQ-06",
+      "category": "policy_qa",
+      "question": "Can you explain the surrender value calculation for a whole life policy?",
+      "response": "The surrender value for a whole life policy is equal to the higher of the Guaranteed Surrender Value (GSV) or Special Surrender Value (SSV) (PolicyTerms_Conditions_VitaLife.pdf, Page 1). This means th",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.3333333333333333,
+      "has_citation": false,
+      "matched_keywords": [
+        "surrender value"
+      ]
+    },
+    {
+      "id": "PQ-07",
+      "category": "policy_qa",
+      "question": "What is the free-look period and how does it work?",
+      "response": "The free-look period is a period of time during which the policyholder may return the policy for a full refund of premium, minus proportionate risk premium and medical costs (LifeInsurance_Glossary_Vi",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.8,
+      "has_citation": false,
+      "matched_keywords": [
+        "free-look",
+        "15 days",
+        "30 days",
+        "refund"
+      ]
+    },
+    {
+      "id": "PQ-08",
+      "category": "policy_qa",
+      "question": "What is the difference between sum assured and maturity benefit?",
+      "response": "According to the LifeInsurance_ProductGuide_VitaLife.pdf (Page 3), the Sum Assured is the guaranteed amount payable, whereas the Maturity Benefit is the sum assured plus all accrued reversionary bonus",
+      "node_path": [
+        "intent_router",
+        "policy_qa_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.5,
+      "has_citation": false,
+      "matched_keywords": [
+        "sum assured",
+        "maturity"
+      ]
+    },
+    {
+      "id": "UW-01",
+      "category": "underwriting",
+      "question": "I am a 30-year-old male smoker. What risk category would I fall under?",
+      "response": "Based on the provided data, as a 30-year-old smoker opting for a cover of INR 1,000,000 with a term of 20 years, your current status indicates a risk tier of 'substandard'. Please note that this is an",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.75,
+      "has_citation": false,
+      "matched_keywords": [
+        "smoker",
+        "substandard",
+        "risk"
+      ]
+    },
+    {
+      "id": "UW-02",
+      "category": "underwriting",
+      "question": "I have Type 2 diabetes with HbA1c of 7.2%. Can I get life insurance?",
+      "response": "Based on the information provided, it appears that you may be eligible for life insurance. Your current status indicates a standard risk tier, which is a positive factor in the underwriting process. \n",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.16666666666666666,
+      "has_citation": false,
+      "matched_keywords": [
+        "HbA1c"
+      ]
+    },
+    {
+      "id": "UW-03",
+      "category": "underwriting",
+      "question": "What health disclosures are required during the underwriting process?",
+      "response": "Based on the provided data, the applicant is a 35-year-old individual seeking a cover of INR 1,000,000 for a term of 20 years. The estimated premium is approximately INR 520.00, and the risk tier is c",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "health",
+        "disclosure",
+        "medical",
+        "history",
+        "lifestyle"
+      ]
+    },
+    {
+      "id": "UW-04",
+      "category": "underwriting",
+      "question": "I had a heart attack 6 years ago but have fully recovered. Can I apply?",
+      "response": "Based on the information provided, it appears that you are eligible to apply for the insurance coverage. Considering your age (35), the desired cover amount (INR 1,000,000), and term (20 years), along",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.2,
+      "has_citation": false,
+      "matched_keywords": [
+        "heart"
+      ]
+    },
+    {
+      "id": "UW-05",
+      "category": "underwriting",
+      "question": "I am 45, have mild hypertension, and want 5,000,000 cover for 20 years.",
+      "response": "Based on the information provided, your current status is as follows: \n- Age: 45\n- Desired Cover: 5,000,000\n- Term: 20 years\n- Pre-existing Condition: Mild Hypertension\n\nThe estimated premium for your",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.6,
+      "has_citation": false,
+      "matched_keywords": [
+        "hypertension",
+        "premium",
+        "indicative"
+      ]
+    },
+    {
+      "id": "UW-06",
+      "category": "underwriting",
+      "question": "I work in underground mining. How does my occupation affect my insurance application?",
+      "response": "Based on the information provided, your occupation in underground mining has been taken into consideration during the initial assessment. Although it's a high-risk occupation, the system has currently",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.4,
+      "has_citation": false,
+      "matched_keywords": [
+        "mining",
+        "high-risk"
+      ]
+    },
+    {
+      "id": "UW-07",
+      "category": "underwriting",
+      "question": "What happens if I have a BMI of 42? Can I still get coverage?",
+      "response": "Based on the provided data, having a BMI of 42 is considered a condition in your application. However, our initial assessment indicates that your risk tier is classified as standard. \n\nGiven this info",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.2,
+      "has_citation": false,
+      "matched_keywords": [
+        "BMI"
+      ]
+    },
+    {
+      "id": "UW-08",
+      "category": "underwriting",
+      "question": "I have stage 3 CKD. What are my options for life insurance?",
+      "response": "Based on the information provided, it appears that you are 35 years old and are looking for a life insurance policy with a cover of INR 1,000,000 for a term of 20 years. You have also disclosed that y",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.16666666666666666,
+      "has_citation": false,
+      "matched_keywords": [
+        "CKD"
+      ]
+    },
+    {
+      "id": "PE-01",
+      "category": "premium_estimation",
+      "question": "What would be the indicative monthly premium for a 30-year-old male non-smoker for a 10,000,000 term policy over 20 years?",
+      "response": "Based on the provided data, the applicant is a 30-year-old non-smoker with a term policy of 10,000,000 over 20 years. The estimated monthly premium is approximately INR 4800.00. Please note that this ",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "premium",
+        "indicative",
+        "INR",
+        "monthly",
+        "non-binding"
+      ]
+    },
+    {
+      "id": "PE-02",
+      "category": "premium_estimation",
+      "question": "How much premium would a 24-year-old female smoker pay for 5,000,000 cover over 15 years?",
+      "response": "Based on the provided data, a 24-year-old female smoker can expect to pay an estimated premium of approximately INR 2511.00 for a 5,000,000 cover over a 15-year term. However, please note that this es",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "premium",
+        "smoker",
+        "female",
+        "indicative"
+      ]
+    },
+    {
+      "id": "PE-03",
+      "category": "premium_estimation",
+      "question": "I'm 36 and want 25,000,000 sum assured for 30 years. What's the estimated premium?",
+      "response": "Based on the provided information, your current status is as follows: \n- Age: 36 years\n- Desired Sum Assured: 25,000,000\n- Term: 30 years\n- Pre-existing Conditions: None\n\nThe estimated premium for the",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "premium",
+        "indicative",
+        "INR",
+        "estimate"
+      ]
+    },
+    {
+      "id": "PE-04",
+      "category": "premium_estimation",
+      "question": "Compare premiums for a 27-year-old male smoker vs non-smoker for 2,500,000 cover.",
+      "response": "Based on the provided data, the applicant is a 27-year-old individual with a coverage amount of 2,500,000 and a term of 20 years. The applicant is a smoker, which has been factored into the risk asses",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.6,
+      "has_citation": false,
+      "matched_keywords": [
+        "smoker",
+        "non-smoker",
+        "premium"
+      ]
+    },
+    {
+      "id": "PE-05",
+      "category": "premium_estimation",
+      "question": "If my risk tier is substandard due to diabetes, how much extra loading is applied to my premium?",
+      "response": "Based on the provided data, your current status indicates a high risk tier due to the presence of diabetes. The estimated premium is INR 910.00. However, please note that this estimate is non-binding ",
+      "node_path": [
+        "intent_router",
+        "underwriting_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.8,
+      "has_citation": false,
+      "matched_keywords": [
+        "loading",
+        "substandard",
+        "extra",
+        "premium"
+      ]
+    },
+    {
+      "id": "BN-01",
+      "category": "beneficiary",
+      "question": "If I want to nominate a minor as my beneficiary, what are the rules?",
+      "response": "According to the BeneficiaryNomination_Guidelines_VitaLife.pdf (Page 1), if you want to nominate a minor as your beneficiary, you must also name an appointee, who is an adult (typically the other pare",
+      "node_path": [
+        "intent_router",
+        "beneficiary_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.6,
+      "has_citation": false,
+      "matched_keywords": [
+        "minor",
+        "nominee",
+        "guardian"
+      ]
+    },
+    {
+      "id": "BN-02",
+      "category": "beneficiary",
+      "question": "Can I split the sum assured between multiple beneficiaries and what are the allocation rules?",
+      "response": "Yes, you can split the sum assured between multiple beneficiaries. According to the BeneficiaryNomination_Guidelines_VitaLife.pdf (Page 2), multiple nominees may be named with specified percentage sha",
+      "node_path": [
+        "intent_router",
+        "beneficiary_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "share",
+        "allocation",
+        "multiple",
+        "nominee",
+        "percentage",
+        "100%"
+      ]
+    },
+    {
+      "id": "BN-03",
+      "category": "beneficiary",
+      "question": "What documents are needed to change a beneficiary after the policy is issued?",
+      "response": "To change a beneficiary after the policy is issued, you will need to submit the following documents:\n\n1. Form NOM-02 (Nomination Change Request) [Source: BeneficiaryNomination_Guidelines_VitaLife.pdf,",
+      "node_path": [
+        "intent_router",
+        "beneficiary_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.8,
+      "has_citation": true,
+      "matched_keywords": [
+        "change",
+        "nomination",
+        "form",
+        "document"
+      ]
+    },
+    {
+      "id": "BN-04",
+      "category": "beneficiary",
+      "question": "Can a non-family member be nominated as a beneficiary?",
+      "response": "Yes, a non-family member can be nominated as a beneficiary (Source: BeneficiaryNomination_Guidelines_VitaLife.pdf, Page: 1). According to the guidelines, \"A nominee does not need to be a blood relativ",
+      "node_path": [
+        "intent_router",
+        "beneficiary_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.6666666666666666,
+      "has_citation": true,
+      "matched_keywords": [
+        "non-family",
+        "nominee"
+      ]
+    },
+    {
+      "id": "BN-05",
+      "category": "beneficiary",
+      "question": "What happens to the policy benefit if the nominated beneficiary predeceases the policyholder?",
+      "response": "According to the guidelines, if the nominated beneficiary predeceases the policyholder, the policy benefit will be paid according to the rules stated in the policy documents. \n\nAs stated in the Benefi",
+      "node_path": [
+        "intent_router",
+        "beneficiary_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.75,
+      "has_citation": false,
+      "matched_keywords": [
+        "predecease",
+        "nominee",
+        "legal heir"
+      ]
+    },
+    {
+      "id": "IS-01",
+      "category": "issuance",
+      "question": "What documents are required for policy issuance?",
+      "response": "According to the PolicyIssuance_Checklist_VitaLife.pdf (Page 1), the documents required for new policy issuance are:\n\n1. Completed VitaLife Proposal Form (PF-01) - for application declaration, health ",
+      "node_path": [
+        "intent_router",
+        "issuance_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 1.0,
+      "has_citation": false,
+      "matched_keywords": [
+        "document",
+        "identity",
+        "proof",
+        "address",
+        "medical",
+        "form"
+      ]
+    },
+    {
+      "id": "IS-02",
+      "category": "issuance",
+      "question": "How long does it typically take from application submission to policy dispatch?",
+      "response": "According to the PolicyIssuance_Checklist_VitaLife.pdf (Page: 1), the policy document is dispatched within 10-15 days after the application submission, once all the required documents are received and",
+      "node_path": [
+        "intent_router",
+        "issuance_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.8,
+      "has_citation": true,
+      "matched_keywords": [
+        "timeline",
+        "days",
+        "dispatch",
+        "issuance"
+      ]
+    },
+    {
+      "id": "LR-01",
+      "category": "lapse_revival",
+      "question": "My policy has lapsed because I missed 3 premiums. What is the process to revive it?",
+      "response": "To revive your lapsed policy, you will need to follow the process outlined in the Lapse_Revival_Reinstatement_VitaLife.pdf document (Page 1). \n\nFirst, ensure that you are within the revival window, wh",
+      "node_path": [
+        "intent_router",
+        "lapse_revival_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.6666666666666666,
+      "has_citation": false,
+      "matched_keywords": [
+        "revival",
+        "lapse",
+        "reinstatement",
+        "premium"
+      ]
+    },
+    {
+      "id": "LR-02",
+      "category": "lapse_revival",
+      "question": "What is the grace period for premium payment and what happens if I miss the deadline?",
+      "response": "According to the PolicyTerms_Conditions_VitaLife.pdf (Page 1), the grace period for premium payment is as follows: \n- 30 days for premiums payable annually, semi-annually, or quarterly; \n- 15 days for",
+      "node_path": [
+        "intent_router",
+        "lapse_revival_agent"
+      ],
+      "intent_correct": true,
+      "keyword_coverage": 0.8,
+      "has_citation": false,
+      "matched_keywords": [
+        "grace period",
+        "30 days",
+        "15 days",
+        "lapse"
+      ]
+    }
+  ]
+}
