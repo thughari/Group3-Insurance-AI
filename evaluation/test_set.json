@@ -1,0 +1,212 @@
+[
+  {
+    "id": "PQ-01",
+    "category": "policy_qa",
+    "question": "What is the difference between a Term Life policy and a Whole Life policy?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["term", "whole life", "maturity", "death benefit", "premium"]
+  },
+  {
+    "id": "PQ-02",
+    "category": "policy_qa",
+    "question": "What are the key features of an Endowment plan versus a ULIP?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["endowment", "ULIP", "market-linked", "guaranteed", "maturity"]
+  },
+  {
+    "id": "PQ-03",
+    "category": "policy_qa",
+    "question": "Which policy type is best suited for a 28-year-old with dependents who wants pure protection?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["term life", "protection", "affordable", "dependents"]
+  },
+  {
+    "id": "PQ-04",
+    "category": "policy_qa",
+    "question": "What riders and add-on benefits are available with VitaLife policies?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["rider", "critical illness", "accidental death", "waiver of premium"]
+  },
+  {
+    "id": "PQ-05",
+    "category": "policy_qa",
+    "question": "What are the standard exclusions in a VitaLife term policy?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["exclusion", "suicide", "war", "criminal"]
+  },
+  {
+    "id": "PQ-06",
+    "category": "policy_qa",
+    "question": "Can you explain the surrender value calculation for a whole life policy?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["surrender value", "paid-up", "bonus"]
+  },
+  {
+    "id": "PQ-07",
+    "category": "policy_qa",
+    "question": "What is the free-look period and how does it work?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["free-look", "15 days", "30 days", "refund", "cancellation"]
+  },
+  {
+    "id": "PQ-08",
+    "category": "policy_qa",
+    "question": "What is the difference between sum assured and maturity benefit?",
+    "expected_intent": "policy_qa",
+    "expected_answer_keywords": ["sum assured", "maturity", "death benefit", "survival"]
+  },
+  {
+    "id": "UW-01",
+    "category": "underwriting",
+    "question": "I am a 30-year-old male smoker. What risk category would I fall under?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["smoker", "substandard", "loading", "risk"]
+  },
+  {
+    "id": "UW-02",
+    "category": "underwriting",
+    "question": "I have Type 2 diabetes with HbA1c of 7.2%. Can I get life insurance?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["diabetes", "HbA1c", "Class I", "Class II", "loading", "accept"]
+  },
+  {
+    "id": "UW-03",
+    "category": "underwriting",
+    "question": "What health disclosures are required during the underwriting process?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["health", "disclosure", "medical", "history", "lifestyle"]
+  },
+  {
+    "id": "UW-04",
+    "category": "underwriting",
+    "question": "I had a heart attack 6 years ago but have fully recovered. Can I apply?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["coronary", "heart", "post-MI", "loading", "accept"]
+  },
+  {
+    "id": "UW-05",
+    "category": "underwriting",
+    "question": "I am 45, have mild hypertension, and want 5,000,000 cover for 20 years.",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["hypertension", "Class I", "loading", "premium", "indicative"]
+  },
+  {
+    "id": "UW-06",
+    "category": "underwriting",
+    "question": "I work in underground mining. How does my occupation affect my insurance application?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["mining", "occupational", "Class II", "high-risk", "loading"]
+  },
+  {
+    "id": "UW-07",
+    "category": "underwriting",
+    "question": "What happens if I have a BMI of 42? Can I still get coverage?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["morbid obesity", "BMI", "Class II", "Class III", "postpone"]
+  },
+  {
+    "id": "UW-08",
+    "category": "underwriting",
+    "question": "I have stage 3 CKD. What are my options for life insurance?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["CKD", "renal", "Class II", "Class III", "loading", "limited"]
+  },
+  {
+    "id": "PE-01",
+    "category": "premium_estimation",
+    "question": "What would be the indicative monthly premium for a 30-year-old male non-smoker for a 10,000,000 term policy over 20 years?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["premium", "indicative", "INR", "monthly", "non-binding"]
+  },
+  {
+    "id": "PE-02",
+    "category": "premium_estimation",
+    "question": "How much premium would a 24-year-old female smoker pay for 5,000,000 cover over 15 years?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["premium", "smoker", "female", "indicative"]
+  },
+  {
+    "id": "PE-03",
+    "category": "premium_estimation",
+    "question": "I'm 36 and want 25,000,000 sum assured for 30 years. What's the estimated premium?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["premium", "indicative", "INR", "estimate"]
+  },
+  {
+    "id": "PE-04",
+    "category": "premium_estimation",
+    "question": "Compare premiums for a 27-year-old male smoker vs non-smoker for 2,500,000 cover.",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["smoker", "non-smoker", "premium", "loading", "difference"]
+  },
+  {
+    "id": "PE-05",
+    "category": "premium_estimation",
+    "question": "If my risk tier is substandard due to diabetes, how much extra loading is applied to my premium?",
+    "expected_intent": "underwriting",
+    "expected_answer_keywords": ["loading", "substandard", "extra", "premium", "percentage"]
+  },
+  {
+    "id": "BN-01",
+    "category": "beneficiary",
+    "question": "If I want to nominate a minor as my beneficiary, what are the rules?",
+    "expected_intent": "beneficiary",
+    "expected_answer_keywords": ["minor", "nominee", "trustee", "appointment", "guardian"]
+  },
+  {
+    "id": "BN-02",
+    "category": "beneficiary",
+    "question": "Can I split the sum assured between multiple beneficiaries and what are the allocation rules?",
+    "expected_intent": "beneficiary",
+    "expected_answer_keywords": ["share", "allocation", "multiple", "nominee", "percentage", "100%"]
+  },
+  {
+    "id": "BN-03",
+    "category": "beneficiary",
+    "question": "What documents are needed to change a beneficiary after the policy is issued?",
+    "expected_intent": "beneficiary",
+    "expected_answer_keywords": ["change", "nomination", "form", "document", "endorsement"]
+  },
+  {
+    "id": "BN-04",
+    "category": "beneficiary",
+    "question": "Can a non-family member be nominated as a beneficiary?",
+    "expected_intent": "beneficiary",
+    "expected_answer_keywords": ["non-family", "nominee", "insurable interest"]
+  },
+  {
+    "id": "BN-05",
+    "category": "beneficiary",
+    "question": "What happens to the policy benefit if the nominated beneficiary predeceases the policyholder?",
+    "expected_intent": "beneficiary",
+    "expected_answer_keywords": ["predecease", "nominee", "legal heir", "estate"]
+  },
+  {
+    "id": "IS-01",
+    "category": "issuance",
+    "question": "What documents are required for policy issuance?",
+    "expected_intent": "issuance",
+    "expected_answer_keywords": ["document", "identity", "proof", "address", "medical", "form"]
+  },
+  {
+    "id": "IS-02",
+    "category": "issuance",
+    "question": "How long does it typically take from application submission to policy dispatch?",
+    "expected_intent": "issuance",
+    "expected_answer_keywords": ["timeline", "days", "dispatch", "issuance", "turnaround"]
+  },
+  {
+    "id": "LR-01",
+    "category": "lapse_revival",
+    "question": "My policy has lapsed because I missed 3 premiums. What is the process to revive it?",
+    "expected_intent": "lapse_revival",
+    "expected_answer_keywords": ["revival", "lapse", "missed", "reinstatement", "premium", "arrears"]
+  },
+  {
+    "id": "LR-02",
+    "category": "lapse_revival",
+    "question": "What is the grace period for premium payment and what happens if I miss the deadline?",
+    "expected_intent": "lapse_revival",
+    "expected_answer_keywords": ["grace period", "30 days", "15 days", "lapse", "penalty"]
+  }
+]
