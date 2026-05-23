@@ -273,10 +273,176 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
+# ── Follow-up question mapping (keyword → contextual suggestions) ───────
+FOLLOWUP_MAP = {
+    "term|plan|option|non-smoker|smoker|age|cover|lakh|crore": [
+        "💵 What would the monthly premium be for this plan?",
+        "🔄 Can I convert this term plan to a whole life policy later?",
+        "📈 What riders (add-ons) should I consider with this plan?",
+        "👨‍👩‍👧 How do I nominate beneficiaries for this policy?",
+        "🏥 Is a medical exam required for this coverage amount?",
+    ],
+    "diabetes|blood pressure|pre-existing|health|medical|disease|heart": [
+        "💰 How much extra premium would I pay for pre-existing conditions?",
+        "📄 What medical reports will I need to submit?",
+        "⏳ Is there a waiting period before my conditions are covered?",
+        "🔬 Can I get coverage if I manage my condition with medication?",
+        "⚖️ What risk tier would I likely fall into?",
+    ],
+    "beneficiar|spouse|children|nominee|family": [
+        "📝 Can I change my beneficiaries after the policy is issued?",
+        "⚖️ How is the payout split among multiple beneficiaries?",
+        "👶 Can a minor be named as a beneficiary?",
+        "🏦 What happens to the policy if the nominee passes away?",
+        "📋 What documents are needed to update beneficiaries?",
+    ],
+    "document|apply|application|paperwork|submit": [
+        "🕐 How long does the application process usually take?",
+        "🏥 Do I need to do a medical examination?",
+        "💳 What are the payment options for premiums?",
+        "📱 Can I complete the entire process online?",
+        "✅ What happens after I submit my application?",
+    ],
+    "difference|compare|term|whole life|endowment|ulip": [
+        "💰 Which type of insurance gives the best returns?",
+        "👨‍👩‍👧 Which plan is best for a family with young children?",
+        "📊 Can you compare premiums for term vs whole life for my age?",
+        "🎯 What's the best option if I want both protection and savings?",
+        "🔄 Can I switch between plan types after purchase?",
+    ],
+    "risk|underwriting|review|approved|rejected|high-risk|declined": [
+        "📋 What factors affect my risk assessment?",
+        "🔄 Can I re-apply if my application is declined?",
+        "💵 How does my risk tier affect my premium?",
+        "🏥 Would improving my health help me get a better rating?",
+        "⏳ How long does the underwriting process take?",
+    ],
+    "premium|cost|price|payment|afford": [
+        "📅 What premium payment frequencies are available (monthly, yearly)?",
+        "💳 Can I pay premiums via auto-debit or UPI?",
+        "📉 How can I reduce my premium amount?",
+        "⚠️ What happens if I miss a premium payment?",
+        "🎁 Are there any tax benefits on the premium I pay?",
+    ],
+}
+
+GENERIC_FOLLOWUPS = [
+    "📋 What documents do I need to apply?",
+    "💰 How are premiums calculated for my profile?",
+    "👨‍👩‍👧‍👦 How do I add beneficiaries to my policy?",
+    "⚖️ What types of life insurance are available?",
+    "🏥 Is a medical examination required?",
+]
+
+import re
+
+def get_followup_questions(last_user_msg: str, n: int = 3) -> list[str]:
+    """Pick the most relevant follow-up questions based on the last user message."""
+    if not last_user_msg:
+        return GENERIC_FOLLOWUPS[:n]
+
+    msg_lower = last_user_msg.lower()
+    best_match = None
+    best_score = 0
+
+    for pattern, questions in FOLLOWUP_MAP.items():
+        keywords = pattern.split("|")
+        score = sum(1 for kw in keywords if kw in msg_lower)
+        if score > best_score:
+            best_score = score
+            best_match = questions
+
+    if best_match:
+        return best_match[:n]
+    return GENERIC_FOLLOWUPS[:n]
+
+
 # ── Chat UI ─────────────────────────────────────────────────────────────
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
+
+# ── Quick Demo Questions (shown only when chat is empty) ────────────────
+DEMO_QUESTIONS = [
+    "🧑‍💼 I'm a 30-year-old non-smoker looking for a ₹50 lakh term plan for 20 years. What are my options?",
+    "🏥 I have diabetes and high blood pressure. Can I still get life insurance?",
+    "👨‍👩‍👧‍👦 How do I add my spouse and children as beneficiaries to my policy?",
+    "📋 What documents do I need to apply for a life insurance policy?",
+    "⚖️ What's the difference between term insurance and whole life insurance?",
+    "💰 I want to apply for a ₹1 crore policy. I'm 45, smoker, with a history of heart disease.",
+]
+
+# Custom CSS for the suggestion chips (used for both welcome & follow-ups)
+st.markdown("""
+<style>
+div[data-testid="stVerticalBlock"] div.quick-q-header {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+div.followup-header {
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+div.followup-header p {
+    font-size: 0.85rem;
+    color: #888;
+}
+/* Style the demo / follow-up question buttons */
+div[data-testid="stVerticalBlock"] button[kind="secondary"] {
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease !important;
+    font-size: 0.85rem !important;
+}
+div[data-testid="stVerticalBlock"] button[kind="secondary"]:hover {
+    border-color: rgba(99, 102, 241, 0.7) !important;
+    background-color: rgba(99, 102, 241, 0.08) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+if not st.session_state.messages:
+    # ── Welcome screen ──
+    st.markdown(
+        "<div class='quick-q-header'>"
+        "<h3>👋 Welcome! Try one of these questions to get started:</h3>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+
+    # Render questions in a 2-column grid
+    cols = st.columns(2)
+    for i, question in enumerate(DEMO_QUESTIONS):
+        with cols[i % 2]:
+            if st.button(question, key=f"demo_q_{i}", use_container_width=True):
+                st.session_state.pending_prompt = question
+                st.rerun()
+
+else:
+    # ── Follow-up suggestions after the last assistant response ──
+    # Find the last user message to determine context
+    last_user_msg = ""
+    for msg in reversed(st.session_state.messages):
+        if msg["role"] == "user":
+            last_user_msg = msg["content"]
+            break
+
+    # Only show follow-ups if the last message is from the assistant
+    if st.session_state.messages[-1]["role"] == "assistant":
+        followups = get_followup_questions(last_user_msg)
+
+        st.markdown(
+            "<div class='followup-header'><p>💡 <b>Suggested follow-ups:</b></p></div>",
+            unsafe_allow_html=True,
+        )
+        cols = st.columns(len(followups))
+        for i, fq in enumerate(followups):
+            with cols[i]:
+                if st.button(fq, key=f"followup_{i}", use_container_width=True):
+                    st.session_state.pending_prompt = fq
+                    st.rerun()
 
 prompt = st.chat_input("Ask a question about life insurance...")
 if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
