@@ -162,67 +162,7 @@ with st.sidebar:
                         })
                         st.rerun()
 
-    # st.divider()
-    # st.header("🎙️ Multimodal Input")
-    # st.caption("Upload a voice recording or image (e.g. medical report) to chat.")
-    # audio_val = st.file_uploader("🎤 Upload Voice Recording", type=["wav", "mp3", "m4a", "ogg", "webm", "flac"])
-    # image_val = st.file_uploader("🖼️ Upload Image", type=["png", "jpg", "jpeg"])
-    # if st.button("Submit Media", use_container_width=True):
-    #     if audio_val or image_val:
-    #         with st.spinner("Processing media..."):
-    #             gemini_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    #             openai_key = os.getenv("OPENAI_API_KEY")
-    #             if not gemini_key and not openai_key:
-    #                 st.error("Gemini or OpenAI API key is required for Multimodal input.")
-    #             else:
-    #                 try:
-    #                     transcribed_text = ""
-    #                     # Extract raw audio bytes
-    #                     raw_audio = audio_val.getvalue() if audio_val else None
-    #                     audio_fname = getattr(audio_val, "name", "audio.wav") if audio_val else None
-                        
-    #                     if gemini_key:
-    #                         client = genai.Client(api_key=gemini_key)
-    #                         contents = ["Extract and transcribe the text from the provided image or audio. Output only the transcribed text/query."]
-    #                         if raw_audio:
-    #                             contents.append(types.Part.from_bytes(data=raw_audio, mime_type="audio/wav"))
-    #                         if image_val:
-    #                             contents.append(types.Part.from_bytes(data=image_val.getvalue(), mime_type=image_val.type))
-    #                         response = client.models.generate_content(model='gemini-2.5-flash', contents=contents)
-    #                         transcribed_text = response.text.strip()
-    #                     elif openai_key:
-    #                         from openai import OpenAI
-    #                         import base64
-    #                         client = OpenAI(api_key=openai_key)
-    #                         if raw_audio:
-    #                             audio_response = client.audio.transcriptions.create(
-    #                                 model="whisper-1", 
-    #                                 file=(audio_fname, raw_audio)
-    #                             )
-    #                             transcribed_text += audio_response.text + "\n"
-    #                         if image_val:
-    #                             base64_image = base64.b64encode(image_val.getvalue()).decode('utf-8')
-    #                             image_url = f"data:{image_val.type};base64,{base64_image}"
-    #                             response = client.chat.completions.create(
-    #                                 model="gpt-4o-mini",
-    #                                 messages=[
-    #                                     {
-    #                                         "role": "user",
-    #                                         "content": [
-    #                                             {"type": "text", "text": "Extract and transcribe the text from this image. Output only the transcribed text/query."},
-    #                                             {"type": "image_url", "image_url": {"url": image_url}}
-    #                                         ]
-    #                                     }
-    #                                 ]
-    #                             )
-    #                             transcribed_text += response.choices[0].message.content.strip()
-    #                         transcribed_text = transcribed_text.strip()
-                        
-    #                     if transcribed_text:
-    #                         st.session_state.pending_prompt = transcribed_text
-    #                         st.rerun()
-    #                 except Exception as e:
-    #                     st.error(f"Error processing media: {e}")
+    # Multimodal input has been moved to the chat bar inline.
     
     st.divider()
     if st.button("➕ Start new Session", use_container_width=True):
@@ -456,7 +396,79 @@ else:
                     st.session_state.pending_prompt = fq
                     st.rerun()
 
-prompt = st.chat_input("Ask a question about life insurance...")
+prompt_input = st.chat_input(
+    "Ask a question or attach a file...", 
+    accept_file=True, 
+    file_type=["png", "jpg", "jpeg", "wav", "mp3", "m4a", "ogg", "webm", "flac"]
+)
+
+prompt = None
+if prompt_input:
+    # If accept_file=True, chat_input returns an object with .text and .files attributes
+    prompt_text = getattr(prompt_input, "text", "")
+    attached_files = getattr(prompt_input, "files", [])
+    
+    if attached_files:
+        with st.spinner("Processing attached media..."):
+            gemini_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            openai_key = os.getenv("OPENAI_API_KEY")
+            if not gemini_key and not openai_key:
+                st.error("Gemini or OpenAI API key is required for Multimodal input.")
+            else:
+                try:
+                    transcribed_text = ""
+                    if gemini_key:
+                        client = genai.Client(api_key=gemini_key)
+                        contents = ["Extract and transcribe the text from the provided image or audio. Output only the transcribed text/query."]
+                        for f in attached_files:
+                            mime = f.type
+                            if mime.startswith("audio/"):
+                                contents.append(types.Part.from_bytes(data=f.getvalue(), mime_type=mime))
+                            elif mime.startswith("image/"):
+                                contents.append(types.Part.from_bytes(data=f.getvalue(), mime_type=mime))
+                        
+                        response = client.models.generate_content(model='gemini-2.5-flash', contents=contents)
+                        transcribed_text = response.text.strip()
+                    elif openai_key:
+                        from openai import OpenAI
+                        import base64
+                        client = OpenAI(api_key=openai_key)
+                        for f in attached_files:
+                            mime = f.type
+                            if mime.startswith("audio/"):
+                                audio_response = client.audio.transcriptions.create(
+                                    model="whisper-1", 
+                                    file=(f.name, f.getvalue())
+                                )
+                                transcribed_text += audio_response.text + "\n"
+                            elif mime.startswith("image/"):
+                                base64_image = base64.b64encode(f.getvalue()).decode('utf-8')
+                                image_url = f"data:{mime};base64,{base64_image}"
+                                response = client.chat.completions.create(
+                                    model="gpt-4o-mini",
+                                    messages=[
+                                        {
+                                            "role": "user",
+                                            "content": [
+                                                {"type": "text", "text": "Extract and transcribe the text from this image. Output only the transcribed text/query."},
+                                                {"type": "image_url", "image_url": {"url": image_url}}
+                                            ]
+                                        }
+                                    ]
+                                )
+                                transcribed_text += response.choices[0].message.content.strip() + "\n"
+                        transcribed_text = transcribed_text.strip()
+                    
+                    if transcribed_text:
+                        prompt = f"{prompt_text}\n\n[Transcribed Media Context:\n{transcribed_text}]".strip()
+                    else:
+                        prompt = prompt_text
+                except Exception as e:
+                    st.error(f"Error processing media: {e}")
+                    prompt = prompt_text
+    else:
+        prompt = prompt_text
+
 if "pending_prompt" in st.session_state and st.session_state.pending_prompt:
     prompt = st.session_state.pending_prompt
     del st.session_state.pending_prompt
