@@ -7,6 +7,7 @@ python-dotenv==1.1.1
 langchain-openai
 langchain-google-genai
 langchain-community
+langchain-core
 faiss-cpu
 pypdf
 pandas
@@ -19,3 +20,5 @@ sentence-transformers
 google-genai
 langgraph-checkpoint-mongodb
 pymongo
+certifi
+llm-guard

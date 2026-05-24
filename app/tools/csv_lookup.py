@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 from typing import Dict, List
+from app.cache import read_csv_cached
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 RISK_CSV_PATH = os.path.join(DATA_DIR, "RiskScore_Classification_Table.csv")
@@ -11,7 +12,7 @@ def classify_risk(disclosures: List[str]) -> str:
         return "standard"
 
     try:
-        df = pd.read_csv(RISK_CSV_PATH)
+        df = read_csv_cached(RISK_CSV_PATH)
     except FileNotFoundError:
         return "unknown"
 
@@ -55,7 +56,7 @@ def classify_risk(disclosures: List[str]) -> str:
 
 def indicative_premium_lookup(age: int, cover_amount: int, term_years: int, risk_tier: str) -> Dict[str, str]:
     try:
-        df = pd.read_csv(PREMIUM_CSV_PATH)
+        df = read_csv_cached(PREMIUM_CSV_PATH)
     except FileNotFoundError:
         return {"monthly_estimate": "N/A", "disclaimer": "Data unavailable."}
 

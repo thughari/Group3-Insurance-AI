@@ -162,14 +162,24 @@ async def underwriting_agent(state: CopilotState) -> Dict:
     risk_tier = classify_risk(disclosures)
     estimate = indicative_premium_lookup(age, cover, term, risk_tier)
 
-    requires_human = risk_tier in {"high", "substandard", "declined"}
+    # Only require human review if the case has NOT already been approved/rejected
+    already_reviewed = state.get("approved_by_human") is not None
+    requires_human = risk_tier in {"high", "substandard", "declined"} and not already_reviewed
+
+    # Inform the LLM about any prior underwriter decision so the response is accurate
+    prior_decision_note = ""
+    if state.get("approved_by_human") is True:
+        prior_decision_note = "\nIMPORTANT: A human underwriter has ALREADY APPROVED this application. Acknowledge the approval in your response and do NOT say it requires further review."
+    elif state.get("approved_by_human") is False:
+        prior_decision_note = "\nIMPORTANT: A human underwriter has ALREADY REJECTED this application. Acknowledge the rejection in your response."
 
     # Generate natural language response
     response_prompt = ChatPromptTemplate.from_messages([
         ("system",
          "You are an underwriting assistant. Summarize the applicant's current status and premium estimate. "
          "Never provide a final underwriting decision. Emphasize estimates are non-binding and indicative only. "
-         "If risk tier is high or substandard, mention it requires human underwriter review."),
+         "If risk tier is high or substandard AND no prior decision exists, mention it requires human underwriter review."
+         "{prior_decision_note}"),
         ("user",
          "Data: Age {age}, Cover {cover}, Term {term}, Conditions: {disclosures}.\n"
          "Risk Tier: {risk_tier}. Estimate: {estimate_amt}\n"
@@ -179,7 +189,7 @@ async def underwriting_agent(state: CopilotState) -> Dict:
     resp_msg = await llm.ainvoke(response_prompt.format_prompt(
         age=age, cover=cover, term=term, disclosures=disclosures,
         risk_tier=risk_tier, estimate_amt=estimate["monthly_estimate"],
-        query=query
+        query=query, prior_decision_note=prior_decision_note
     ), config={"tags": ["final_response"]})
 
     return {
@@ -459,6 +469,10 @@ def route_from_intent(state: CopilotState) -> str:
 
 
 def route_from_underwriting(state: CopilotState) -> str:
+    # If a human has already reviewed this case (approved or rejected),
+    # don't interrupt again — go straight to END.
+    if state.get("approved_by_human") is not None:
+        return "end"
     return "human_review" if state.get("requires_human_review") else "end"
 
 

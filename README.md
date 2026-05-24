@@ -111,6 +111,27 @@ flowchart TD
 
 ---
 
+## Caching & Safety (Guardrails)
+
+- **Application-level caches:** The project implements a lightweight, in-process caching layer in `app/cache.py` using a small `TTLCache` implementation and `functools.lru_cache` for static CSV reads. Key cache instances and defaults:
+    - `rag_cache` — TTL 600s (10 minutes), max 128 entries (caches RAG retrievals)
+    - `guardrail_cache` — TTL 1800s (30 minutes), max 512 entries (caches guardrail decisions)
+    - `state_cache` — TTL 5s, max 32 entries (short-term cache for UI state fetches)
+    - `sessions_cache` — TTL 3s, max 1 entry (reduces /sessions load)
+    - `read_csv_cached` — `lru_cache(maxsize=4)` for deterministic CSV file reads
+
+- **Why these choices:** in-process caches are zero-dependency, extremely low-latency, and sufficient for single-process deployments (development and small-scale production). They avoid the operational overhead of Redis/Memcached. When scaling to multiple processes or hosts, swap the TTL caches for a Redis-backed cache.
+
+- **LLM-level caching:** `app/graph.py` sets LangChain's (langchain_core) LLM cache to an `InMemoryCache()` via `set_llm_cache(InMemoryCache())`. This deduplicates identical LLM requests in-process and reduces API calls and latency. Note: this cache is process-local and ephemeral (printed log: "✅ In-Memory LLM Cache Enabled").
+
+- **Guardrails implementation:** Safety checks are implemented locally in `app/guards.py` (not via an external `guardrails-ai` package). The guard layer uses deterministic phrase and regex checks for:
+    - explicit forbidden phrases (insurance/medical final decisions, guaranteed quotes),
+    - prompt-injection patterns (e.g., "ignore all instructions", "reveal your system prompt"),
+    - PHI/PII patterns (SSN, Aadhaar, credit-card formats, keywords like "my password is").
+    - Guard decisions are cached in `guardrail_cache` to avoid re-evaluating identical inputs.
+
+If you want, the project can be extended to use Redis for both the app caches and LLM cache (recommended for multi-worker deployments).
+
 ## Quickstart
 
 ### 1. Clone the Repository

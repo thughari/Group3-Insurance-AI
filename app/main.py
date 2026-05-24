@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from app.graph import build_graph, stream_agent_response
 from app.guards import apply_guardrails
 from app.models import ChatRequest, ChatResponse, CopilotState
+from app.cache import get_all_cache_stats
 
 app = FastAPI(title="Life Insurance AI Copilot")
 compiled_graph = build_graph()
@@ -58,6 +59,12 @@ _active_sessions: dict[str, dict] = load_sessions()
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/cache/stats")
+def cache_stats():
+    """Returns hit/miss statistics for all in-memory cache layers."""
+    return get_all_cache_stats()
 
 
 @app.post("/chat", response_model=ChatResponse)

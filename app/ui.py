@@ -20,10 +20,15 @@ if "session_id" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "force_state_refresh" not in st.session_state:
+    st.session_state.force_state_refresh = False
 
-def fetch_state():
+
+@st.cache_data(ttl=5, show_spinner=False)
+def fetch_state(_session_id: str):
+    """Fetch copilot state from backend. Cached for 5s to avoid redundant calls on Streamlit reruns."""
     try:
-        resp = httpx.get(f"{API_URL}/state/{st.session_state.session_id}", timeout=10.0)
+        resp = httpx.get(f"{API_URL}/state/{_session_id}", timeout=10.0)
         if resp.status_code == 200:
             return resp.json().get("state", {})
     except Exception:
@@ -90,7 +95,11 @@ st.caption("Powered by LangGraph · Ask about policies, underwriting, beneficiar
 # ── Sidebar for state display and HitL ──────────────────────────────────
 with st.sidebar:
     st.header("📊 Copilot State")
-    state_data = fetch_state()
+    # If we just switched sessions, bypass cache and do a live fetch
+    if st.session_state.force_state_refresh:
+        fetch_state.clear()
+        st.session_state.force_state_refresh = False
+    state_data = fetch_state(st.session_state.session_id)
 
     if state_data:
         app_data = state_data.get("applicant_data", {})
@@ -214,6 +223,12 @@ with st.sidebar:
     #                         st.rerun()
     #                 except Exception as e:
     #                     st.error(f"Error processing media: {e}")
+    
+    st.divider()
+    if st.button("➕ Start new Session", use_container_width=True):
+        st.session_state.session_id = str(uuid.uuid4())
+        st.session_state.messages = []
+        st.rerun()
 
     st.divider()
     st.header("📋 Active Sessions")
@@ -243,6 +258,8 @@ with st.sidebar:
                             except Exception:
                                 pass
                             st.session_state.session_id = s["session_id"]
+                            # Flag that on next render, cache must be cleared for fresh state
+                            st.session_state.force_state_refresh = True
                             # Restore conversation history from the backend state
                             history = target_state.get("conversation_history", [])
                             st.session_state.messages = [
@@ -267,11 +284,6 @@ with st.sidebar:
     except Exception:
         st.caption("Backend not reachable.")
 
-    st.divider()
-    if st.button("🗑️ Clear Chat & Reset Session", use_container_width=True):
-        st.session_state.session_id = str(uuid.uuid4())
-        st.session_state.messages = []
-        st.rerun()
 
 # ── Follow-up question mapping (keyword → contextual suggestions) ───────
 FOLLOWUP_MAP = {

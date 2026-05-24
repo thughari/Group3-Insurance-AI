@@ -322,6 +322,16 @@ Why file exists:
 Why file exists:
 - deterministic pre-LLM policy enforcement.
 
+#### 7.1 Guardrail caching and behavior
+
+- Guardrail decisions are cached using the `guardrail_cache` instance in `app/cache.py`.
+- `guardrail_cache` is a `TTLCache(ttl_seconds=1800, max_size=512)`, which caches the `GuardResult` for 30 minutes by default. This is safe because the guard checks are deterministic for the same input and caching reduces duplicate computation on repeated inputs.
+- The guard logic is intentionally local and deterministic (string matching and regex). This design avoids introducing third-party runtime dependencies and keeps refusal responses auditable and transparent.
+
+---
+
+
+
 ---
 
 ## 8) UI Layer
@@ -329,10 +339,36 @@ Why file exists:
 ### File: `app/ui.py`
 
 Key responsibilities:
+- `app/cache.py` — central in-memory cache utilities. Contains a lightweight `TTLCache` class, a few named cache instances, and `read_csv_cached` (an `lru_cache`) for static CSV reads.
+- `app/graph.py` — sets a LangChain LLM cache via `set_llm_cache(InMemoryCache())`. This is an in-process LLM request deduplication cache.
+- `app/guards.py` — uses `guardrail_cache` from `app/cache.py` to memoize guard decisions.
+
 - initialize Streamlit page/session state,
+- Zero external dependencies (no Redis/Memcached), keeping the runtime simple and portable.
+- Microsecond lookups avoid network hops in single-process deployments (Streamlit + uvicorn). This is important for UI responsiveness.
+- TTLs prevent stale data (especially for RAG queries) while still enabling huge reductions in repeated work.
+
 - call backend chat endpoints,
+- `InMemoryCache()` reduces duplicate expensive LLM API calls during rapid development or when clients re-send identical prompts.
+- It is process-local; for multi-worker setups, replace with a Redis-backed cache or a langchain-supported distributed cache.
+
 - render streamed responses,
+- If you deploy with multiple uvicorn workers, multiple containers, or horizontal scaling behind a load balancer, in-process caches will not be shared and may increase overall API cost instead of reducing it. In that case:
+  1. Replace `TTLCache` instances with a Redis-backed TTL cache (e.g., `redis-py` + small wrapper implementing `get/set/invalidate`).
+  2. Use a shared LLM request cache supported by your LLM client or a Redis-backed `langchain` cache.
+
 - show state metrics (risk tier, applicant data, node path),
+- Keep `guardrail_cache` enabled — it's cheap and makes guard checks performant.
+- Keep `read_csv_cached` for CSV reads — these files are static and safe to cache with `lru_cache`.
+- For production scale (multi-worker), prioritize Redis for:
+  - `rag_cache` (share retrieval results across workers)
+  - `llm` cache (deduplicate at cluster level)
+  - `sessions` storage is already supported by MongoDB in `app/graph.py`
+
+Files to inspect:
+- `app/cache.py` — TTLCache, cache instances, `read_csv_cached`
+- `app/graph.py` — `set_llm_cache(InMemoryCache())` and in-memory LLM cache print
+- `app/guards.py` — guard logic and cache usage
 - provide human review approve/reject controls,
 - display active sessions and allow switching/deletion.
 

@@ -1,4 +1,5 @@
 import os
+from app.cache import rag_cache
 import glob
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -90,6 +91,12 @@ def build_faiss_index(force: bool = False):
     print(f"FAISS index built successfully with {len(splits)} chunks ({provider} embeddings).")
 
 def retrieve_policy_context(query: str, k: int = 3) -> str:
+    # Check TTL cache first — avoids re-running FAISS search for repeated queries
+    cache_key = f"{query}::{k}"
+    cached = rag_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     global _vectorstore_cache
     build_faiss_index()
     
@@ -107,5 +114,7 @@ def retrieve_policy_context(query: str, k: int = 3) -> str:
         content = doc.page_content.replace("\n", " ")
         context_parts.append(f"[Source: {source}, Page: {page}]\n{content}")
         
-    return "\n\n".join(context_parts)
+    result = "\n\n".join(context_parts)
+    rag_cache.set(cache_key, result)
+    return result
 
