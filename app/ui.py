@@ -182,24 +182,14 @@ with st.sidebar:
             sessions_data = sessions_resp.json()
             all_sessions = sessions_data.get("sessions", [])
 
-            from datetime import datetime, timedelta
-
-            active_cutoff = datetime.utcnow() - timedelta(minutes=30)
-            active_sessions = []
-            history_sessions = []
-            for s in all_sessions:
-                ts = s.get("last_active")
-                try:
-                    last_active_dt = datetime.fromisoformat(ts)
-                except Exception:
-                    last_active_dt = None
-
-                is_current = s["session_id"] == st.session_state.session_id
-                is_active = is_current or (last_active_dt is not None and last_active_dt >= active_cutoff)
-                if is_active:
-                    active_sessions.append(s)
-                else:
-                    history_sessions.append(s)
+            active_sessions = [
+                s for s in all_sessions
+                if s.get("session_id") == st.session_state.session_id
+            ]
+            history_sessions = [
+                s for s in all_sessions
+                if s.get("session_id") != st.session_state.session_id
+            ]
 
             st.caption(
                 f"{len(active_sessions)} active · {len(history_sessions)} in history"
