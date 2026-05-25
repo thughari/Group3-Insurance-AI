@@ -43,6 +43,7 @@ class CopilotState(TypedDict, total=False):
     applicant_data: Dict[str, Any]
     risk_tier: RiskTier
     policy_type_preference: Optional[str]
+    retrieval_context: Optional[str]
     conversation_history: Annotated[List[Dict[str, str]], add_and_truncate_history]
     node_outputs: Dict[str, Any]
     requires_human_review: bool

@@ -82,12 +82,12 @@ async def intent_router(state: CopilotState) -> Dict:
         ("system",
          "You are an intent classifier for a life insurance copilot. "
          "Classify the user's intent based on their latest query and conversation history.\n"
-         "- underwriting: asking about risk, premium estimates, health disclosures, cover amount.\n"
-         "- policy_qa: asking about product types (term vs whole), coverages, riders.\n"
+         "- underwriting: asking about risk, premium estimates, health disclosures, cover amount, or comparing premiums.\n"
+         "- policy_qa: asking about product types, coverages, riders, or comparing policy features (unless explicitly asking for a markdown table).\n"
          "- beneficiary: asking about nominations, nominees, shares.\n"
          "- issuance: asking about pending documents, application status, issuance timelines.\n"
          "- lapse_revival: asking about missed premiums, grace periods, reinstatement, revival.\n"
-         "- policy_comparison: explicitly asking to compare policy types (e.g., term vs whole life).\n"
+         "- policy_comparison: explicitly asking for a side-by-side structured comparison table of policy types.\n"
          "- lapse_prediction: asking to predict lapse risk based on payment history.\n"
          "Default to policy_qa if unsure.\n\nConversation History:\n{history}"),
         ("user", "{query}")
@@ -106,7 +106,9 @@ async def intent_router(state: CopilotState) -> Dict:
         print(f"LLM Routing failed: {e}")
         # Fallback rule-based
         q = query.lower()
-        if any(k in q for k in ["underwriting", "premium", "risk", "smoker", "diabetes", "cover", "age"]):
+        if "premium" in q and any(k in q for k in ["compare", "vs", "difference"]):
+            intent = "underwriting"
+        elif any(k in q for k in ["underwriting", "premium", "risk", "smoker", "diabetes", "cover", "age"]):
             intent = "underwriting"
         elif any(k in q for k in ["beneficiary", "nominee", "share"]):
             intent = "beneficiary"
@@ -114,7 +116,7 @@ async def intent_router(state: CopilotState) -> Dict:
             intent = "issuance"
         elif any(k in q for k in ["lapse", "revival", "reinstat", "grace period", "missed premium"]):
             intent = "lapse_revival"
-        elif "compare" in q or "vs" in q or "difference" in q:
+        elif "table" in q and any(k in q for k in ["compare", "vs", "difference"]):
             intent = "policy_comparison"
         elif "predict" in q or "history" in q:
             intent = "lapse_prediction"
@@ -218,7 +220,7 @@ async def policy_qa_agent(state: CopilotState) -> Dict:
         ("system",
          "You are a Life Insurance Copilot answering policy questions. "
          "Use the provided context to answer. Always include citations "
-         "(Document name and Page number) from the context. "
+         "in the format [Source: <Document name>, Page: <number>] from the context. "
          "If the context does not contain the answer, say you don't know based on the documents.\n\n"
          "Context:\n{context}\n\nConversation History:\n{history}"),
         ("user", "{query}")
@@ -231,6 +233,7 @@ async def policy_qa_agent(state: CopilotState) -> Dict:
     return {
         "response": resp.content,
         "node_path": ["policy_qa_agent"],
+        "retrieval_context": ctx,
     }
 
 
@@ -243,7 +246,7 @@ async def beneficiary_agent(state: CopilotState) -> Dict:
         ("system",
          "You are a Beneficiary agent. Guide the user on nomination rules, share allocations, "
          "and minor nominee rules based on the context. Always include citations "
-         "(Document name and Page number).\n\nContext:\n{context}"),
+         "in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
         ("user", "{query}")
     ])
 
@@ -252,6 +255,7 @@ async def beneficiary_agent(state: CopilotState) -> Dict:
     return {
         "response": resp.content,
         "node_path": ["beneficiary_agent"],
+        "retrieval_context": ctx,
     }
 
 
@@ -263,7 +267,7 @@ async def issuance_agent(state: CopilotState) -> Dict:
     prompt = ChatPromptTemplate.from_messages([
         ("system",
          "You are an Issuance agent. Answer questions about pending documents and issuance timelines "
-         "based on the context. Always include citations (Document name and Page number).\n\nContext:\n{context}"),
+         "based on the context. Always include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
         ("user", "{query}")
     ])
 
@@ -272,6 +276,7 @@ async def issuance_agent(state: CopilotState) -> Dict:
     return {
         "response": resp.content,
         "node_path": ["issuance_agent"],
+        "retrieval_context": ctx,
     }
 
 
@@ -286,7 +291,7 @@ async def lapse_revival_agent(state: CopilotState) -> Dict:
          "You are a Lapse & Revival specialist agent for life insurance. "
          "Answer questions about missed premiums, grace periods, policy lapse conditions, "
          "revival requirements, reinstatement documentation, and surrender value implications. "
-         "Always include citations (Document name and Page number).\n\nContext:\n{context}"),
+         "Always include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
         ("user", "{query}")
     ])
 
@@ -295,6 +300,7 @@ async def lapse_revival_agent(state: CopilotState) -> Dict:
     return {
         "response": resp.content,
         "node_path": ["lapse_revival_agent"],
+        "retrieval_context": ctx,
     }
 
 
@@ -307,7 +313,7 @@ async def policy_comparison_agent(state: CopilotState) -> Dict:
         ("system",
          "You are a Policy Comparison specialist. The user wants to compare different policy types. "
          "Using the provided context, generate a structured Markdown table comparing the requested policies "
-         "highlighting their pros and cons. Always include citations (Document name and Page number) below the table.\n\nContext:\n{context}"),
+         "highlighting their pros and cons. Always include citations in the format [Source: <Document name>, Page: <number>] below the table.\n\nContext:\n{context}"),
         ("user", "{query}")
     ])
 
@@ -315,6 +321,7 @@ async def policy_comparison_agent(state: CopilotState) -> Dict:
     return {
         "response": resp.content,
         "node_path": ["policy_comparison_agent"],
+        "retrieval_context": ctx,
     }
 
 
@@ -330,7 +337,7 @@ async def lapse_prediction_agent(state: CopilotState) -> Dict:
         ("system",
          "You are a Lapse Prediction specialist. Evaluate the lapse risk based on the user's payment history. "
          "Proactively suggest revival options if the risk is high. Use the provided policy context for accurate rules. "
-         "Always include citations.\n\nContext:\n{context}\n\nPayment History:\n{payment_history}"),
+         "Always include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}\n\nPayment History:\n{payment_history}"),
         ("user", "{query}")
     ])
 
@@ -338,6 +345,7 @@ async def lapse_prediction_agent(state: CopilotState) -> Dict:
     return {
         "response": resp.content,
         "node_path": ["lapse_prediction_agent"],
+        "retrieval_context": ctx,
     }
 
 
@@ -370,7 +378,7 @@ async def stream_agent_response(state: CopilotState, agent_name: str) -> AsyncIt
             ("system",
              "You are a Life Insurance Copilot answering policy questions. "
              "Use the provided context to answer. Always include citations "
-             "(Document name and Page number) from the context.\n\n"
+             "in the format [Source: <Document name>, Page: <number>] from the context.\n\n"
              "Context:\n{context}\n\nConversation History:\n{history}"),
             ("user", "{query}")
         ])
@@ -381,7 +389,7 @@ async def stream_agent_response(state: CopilotState, agent_name: str) -> AsyncIt
         prompt = ChatPromptTemplate.from_messages([
             ("system",
              "You are a Beneficiary agent. Guide on nomination rules, share allocations, "
-             "and minor nominee rules. Include citations.\n\nContext:\n{context}"),
+             "and minor nominee rules. Include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
             ("user", "{query}")
         ])
         messages = prompt.format_prompt(context=ctx, query=query).to_messages()
@@ -391,7 +399,7 @@ async def stream_agent_response(state: CopilotState, agent_name: str) -> AsyncIt
         prompt = ChatPromptTemplate.from_messages([
             ("system",
              "You are an Issuance agent. Answer about pending documents and timelines. "
-             "Include citations.\n\nContext:\n{context}"),
+             "Include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
             ("user", "{query}")
         ])
         messages = prompt.format_prompt(context=ctx, query=query).to_messages()
@@ -401,7 +409,7 @@ async def stream_agent_response(state: CopilotState, agent_name: str) -> AsyncIt
         prompt = ChatPromptTemplate.from_messages([
             ("system",
              "You are a Lapse & Revival specialist. Answer about missed premiums, "
-             "grace periods, revival requirements. Include citations.\n\nContext:\n{context}"),
+             "grace periods, revival requirements. Include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
             ("user", "{query}")
         ])
         messages = prompt.format_prompt(context=ctx, query=query).to_messages()
@@ -411,7 +419,7 @@ async def stream_agent_response(state: CopilotState, agent_name: str) -> AsyncIt
         prompt = ChatPromptTemplate.from_messages([
             ("system",
              "You are a Policy Comparison specialist. Generate a structured Markdown table comparing the requested policies "
-             "highlighting their pros and cons. Include citations.\n\nContext:\n{context}"),
+             "highlighting their pros and cons. Include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}"),
             ("user", "{query}")
         ])
         messages = prompt.format_prompt(context=ctx, query=query).to_messages()
@@ -422,7 +430,7 @@ async def stream_agent_response(state: CopilotState, agent_name: str) -> AsyncIt
         prompt = ChatPromptTemplate.from_messages([
             ("system",
              "You are a Lapse Prediction specialist. Evaluate lapse risk based on payment history and suggest revival options. "
-             "Include citations.\n\nContext:\n{context}\n\nPayment History:\n{payment_history}"),
+             "Include citations in the format [Source: <Document name>, Page: <number>].\n\nContext:\n{context}\n\nPayment History:\n{payment_history}"),
             ("user", "{query}")
         ])
         messages = prompt.format_prompt(context=ctx, payment_history=mock_payment_history, query=query).to_messages()

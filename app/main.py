@@ -81,11 +81,12 @@ async def chat(req: ChatRequest):
     config = {"configurable": {"thread_id": req.session_id}}
 
     import datetime
-    _active_sessions[req.session_id] = {
-        "last_active": datetime.datetime.now().isoformat(),
-        "last_query": req.message[:100],
-    }
-    save_sessions(_active_sessions)
+    if "eval" not in req.session_id.lower():
+        _active_sessions[req.session_id] = {
+            "last_active": datetime.datetime.now().isoformat(),
+            "last_query": req.message[:100],
+        }
+        save_sessions(_active_sessions)
 
     # Check if currently interrupted
     state_snapshot = await compiled_graph.aget_state(config)
@@ -149,11 +150,12 @@ async def chat_stream(req: ChatRequest):
 
     # Track session
     import datetime
-    _active_sessions[req.session_id] = {
-        "last_active": datetime.datetime.now().isoformat(),
-        "last_query": req.message[:100],
-    }
-    save_sessions(_active_sessions)
+    if "eval" not in req.session_id.lower():
+        _active_sessions[req.session_id] = {
+            "last_active": datetime.datetime.now().isoformat(),
+            "last_query": req.message[:100],
+        }
+        save_sessions(_active_sessions)
 
     # Check if currently interrupted
     state_snapshot = await compiled_graph.aget_state(config)
@@ -320,7 +322,7 @@ async def list_sessions():
                 print(f"Error fetching state for {sid}: {e}")
                 return None
 
-        tasks = [fetch_session_info(sid, info) for sid, info in current_sessions.items()]
+        tasks = [fetch_session_info(sid, info) for sid, info in current_sessions.items() if "eval" not in sid.lower()]
         results = await asyncio.gather(*tasks)
         sessions = [s for s in results if s is not None]
         

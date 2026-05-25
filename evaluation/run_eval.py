@@ -62,8 +62,9 @@ def run_evaluation():
         expected_intent = tc.get("expected_intent", "")
         keywords = tc.get("expected_answer_keywords", [])
 
-        # Use a unique session per question to avoid state carryover
-        session_id = f"eval-{qid}"
+        # Use a unique session per question per run to avoid state carryover
+        import time
+        session_id = f"eval-{qid}-{int(time.time())}"
         print(f"  [{i:02d}/{len(test_set)}] {qid} ({category})")
         print(f"     Q: {question[:80]}...")
 
@@ -166,12 +167,12 @@ def run_evaluation():
         relevancy_scores = []
 
         for r in results:
-            # We need the retrieval context for faithfulness
-            # For now, use the response as self-contained context
+            retrieval_context = r.get("state", {}).get("retrieval_context", "")
+            
             test_case = LLMTestCase(
                 input=r["question"],
                 actual_output=r["response"],
-                retrieval_context=[r["response"]],
+                retrieval_context=[retrieval_context] if retrieval_context else [],
             )
 
             try:

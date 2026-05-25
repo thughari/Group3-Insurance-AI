@@ -22,3 +22,4 @@ langgraph-checkpoint-mongodb
 pymongo
 certifi
 llm-guard
+deepeval
