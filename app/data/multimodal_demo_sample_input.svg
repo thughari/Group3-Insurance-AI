@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#f5f9ff"/>
+  <rect x="40" y="30" width="1200" height="90" rx="20" fill="#13468c"/>
+  <text x="70" y="82" font-size="40" font-family="Arial" fill="white" font-weight="700">Life Insurance AI Copilot – Multimodal Demo Sample</text>
+
+  <rect x="40" y="150" width="720" height="530" rx="18" fill="white" stroke="#d2dceb"/>
+  <text x="70" y="195" font-size="32" font-family="Arial" fill="#1d2f52" font-weight="700">Sample Input Card</text>
+
+  <text x="80" y="245" font-size="26" font-family="Arial" fill="#243b63">• Name: Priya Sharma</text>
+  <text x="80" y="285" font-size="26" font-family="Arial" fill="#243b63">• Age: 34</text>
+  <text x="80" y="325" font-size="26" font-family="Arial" fill="#243b63">• Smoker: No</text>
+  <text x="80" y="365" font-size="26" font-family="Arial" fill="#243b63">• Annual Income: ₹18,00,000</text>
+  <text x="80" y="405" font-size="26" font-family="Arial" fill="#243b63">• Existing Conditions: Mild Hypertension</text>
+  <text x="80" y="445" font-size="26" font-family="Arial" fill="#243b63">• Requested Cover: ₹1,00,00,000</text>
+  <text x="80" y="485" font-size="26" font-family="Arial" fill="#243b63">• Term: 25 years</text>
+  <text x="80" y="525" font-size="26" font-family="Arial" fill="#243b63">• Nominee: Spouse (Arjun Sharma)</text>
+
+  <rect x="790" y="150" width="450" height="530" rx="18" fill="white" stroke="#d2dceb"/>
+  <text x="820" y="195" font-size="30" font-family="Arial" fill="#1d2f52" font-weight="700">Suggested Demo Prompt</text>
+  <text x="820" y="245" font-size="22" font-family="Arial" fill="#2a3f67">"Analyze this image and extract applicant details.</text>
+  <text x="820" y="280" font-size="22" font-family="Arial" fill="#2a3f67">Classify risk tier, identify missing underwriting</text>
+  <text x="820" y="315" font-size="22" font-family="Arial" fill="#2a3f67">documents, and suggest suitable policy options."</text>
+  <text x="820" y="380" font-size="22" font-family="Arial" fill="#2a3f67">Expected:</text>
+  <text x="820" y="415" font-size="22" font-family="Arial" fill="#2a3f67">• OCR-like extraction</text>
+  <text x="820" y="450" font-size="22" font-family="Arial" fill="#2a3f67">• Health-risk interpretation</text>
+  <text x="820" y="485" font-size="22" font-family="Arial" fill="#2a3f67">• Underwriting checklist guidance</text>
+  <text x="820" y="520" font-size="22" font-family="Arial" fill="#2a3f67">• Follow-up questions for advisor</text>
+</svg>

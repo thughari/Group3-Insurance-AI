@@ -147,6 +147,8 @@ with st.sidebar:
                             "role": "assistant",
                             "content": "✅ Underwriter decision: **Approved**. Your policy application will proceed."
                         })
+                        st.session_state.force_state_refresh = True
+                        fetch_state.clear()
                         st.rerun()
             with col2:
                 if st.button("❌ Reject", use_container_width=True):
@@ -160,6 +162,8 @@ with st.sidebar:
                             "role": "assistant",
                             "content": "❌ Underwriter decision: **Rejected**. We cannot proceed with the policy at this time."
                         })
+                        st.session_state.force_state_refresh = True
+                        fetch_state.clear()
                         st.rerun()
 
     # Multimodal input has been moved to the chat bar inline.
@@ -171,16 +175,31 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    st.header("📋 Active Sessions")
+    st.header("📂 Session Manager")
     try:
         sessions_resp = httpx.get(f"{API_URL}/sessions", timeout=5.0)
         if sessions_resp.status_code == 200:
             sessions_data = sessions_resp.json()
-            st.caption(f"{sessions_data['count']} session(s) active")
-            for s in sessions_data.get("sessions", []):
+            all_sessions = sessions_data.get("sessions", [])
+
+            active_sessions = [
+                s for s in all_sessions
+                if s.get("session_id") == st.session_state.session_id
+            ]
+            history_sessions = [
+                s for s in all_sessions
+                if s.get("session_id") != st.session_state.session_id
+            ]
+
+            st.caption(
+                f"1 current · {len(history_sessions)} in history"
+            )
+
+            def render_session_card(s, section_key: str, use_expander: bool = True):
                 is_current = s["session_id"] == st.session_state.session_id
                 label = f"{'🟢' if is_current else '⚪'} `{s['session_id'][:8]}...`"
-                with st.expander(label, expanded=is_current):
+
+                def card_content():
                     st.write(f"**Last Query:** {s.get('last_query', 'N/A')}")
                     st.write(f"**Intent:** `{s.get('intent', 'N/A')}`")
                     st.write(f"**Trace:** {' ➔ '.join(s.get('node_path', []))}")
@@ -188,7 +207,7 @@ with st.sidebar:
                         st.warning("⚠️ Paused for HitL review")
                     st.caption(f"Last active: {s.get('last_active', 'N/A')}")
                     if not is_current:
-                        if st.button("🔀 Switch to this session", key=f"switch_{s['session_id']}", use_container_width=True):
+                        if st.button("🔀 Switch to this session", key=f"switch_{section_key}_{s['session_id']}", use_container_width=True):
                             # Load conversation history from backend state
                             target_state = {}
                             try:
@@ -209,8 +228,8 @@ with st.sidebar:
                             st.rerun()
                     else:
                         st.success("✅ Current session")
-                    
-                    if st.button("🗑️ Delete Session", key=f"del_{s['session_id']}", use_container_width=True):
+
+                    if st.button("🗑️ Delete Session", key=f"del_{section_key}_{s['session_id']}", use_container_width=True):
                         try:
                             httpx.delete(f"{API_URL}/sessions/{s['session_id']}", timeout=5.0)
                             if is_current:
@@ -219,6 +238,26 @@ with st.sidebar:
                             st.rerun()
                         except Exception:
                             st.error("Failed to delete session.")
+
+                if use_expander:
+                    with st.expander(label, expanded=is_current):
+                        card_content()
+                else:
+                    st.caption(label)
+                    card_content()
+            with st.expander("🟢 Current Session", expanded=True):
+                if active_sessions:
+                    for s in active_sessions:
+                        render_session_card(s, "active", use_expander=False)
+                else:
+                    st.caption("No active sessions.")
+
+            with st.expander("🕘 Session History", expanded=False):
+                if history_sessions:
+                    for s in history_sessions:
+                        render_session_card(s, "history")
+                else:
+                    st.caption("No historical sessions yet.")
         else:
             st.caption("Could not fetch sessions.")
     except Exception:
