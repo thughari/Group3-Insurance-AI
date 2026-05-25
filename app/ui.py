@@ -195,10 +195,11 @@ with st.sidebar:
                 f"1 current · {len(history_sessions)} in history"
             )
 
-            def render_session_card(s, section_key: str):
+            def render_session_card(s, section_key: str, use_expander: bool = True):
                 is_current = s["session_id"] == st.session_state.session_id
                 label = f"{'🟢' if is_current else '⚪'} `{s['session_id'][:8]}...`"
-                with st.expander(label, expanded=is_current):
+
+                def card_content():
                     st.write(f"**Last Query:** {s.get('last_query', 'N/A')}")
                     st.write(f"**Intent:** `{s.get('intent', 'N/A')}`")
                     st.write(f"**Trace:** {' ➔ '.join(s.get('node_path', []))}")
@@ -238,10 +239,16 @@ with st.sidebar:
                         except Exception:
                             st.error("Failed to delete session.")
 
+                if use_expander:
+                    with st.expander(label, expanded=is_current):
+                        card_content()
+                else:
+                    st.caption(label)
+                    card_content()
             with st.expander("🟢 Current Session", expanded=True):
                 if active_sessions:
                     for s in active_sessions:
-                        render_session_card(s, "active")
+                        render_session_card(s, "active", use_expander=False)
                 else:
                     st.caption("No active sessions.")
 
