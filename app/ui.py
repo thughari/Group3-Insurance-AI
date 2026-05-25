@@ -147,6 +147,8 @@ with st.sidebar:
                             "role": "assistant",
                             "content": "✅ Underwriter decision: **Approved**. Your policy application will proceed."
                         })
+                        st.session_state.force_state_refresh = True
+                        fetch_state.clear()
                         st.rerun()
             with col2:
                 if st.button("❌ Reject", use_container_width=True):
@@ -160,6 +162,8 @@ with st.sidebar:
                             "role": "assistant",
                             "content": "❌ Underwriter decision: **Rejected**. We cannot proceed with the policy at this time."
                         })
+                        st.session_state.force_state_refresh = True
+                        fetch_state.clear()
                         st.rerun()
 
     # Multimodal input has been moved to the chat bar inline.
