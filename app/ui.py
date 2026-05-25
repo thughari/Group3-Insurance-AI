@@ -171,13 +171,37 @@ with st.sidebar:
         st.rerun()
 
     st.divider()
-    st.header("📋 Active Sessions")
+    st.header("📂 Session Manager")
     try:
         sessions_resp = httpx.get(f"{API_URL}/sessions", timeout=5.0)
         if sessions_resp.status_code == 200:
             sessions_data = sessions_resp.json()
-            st.caption(f"{sessions_data['count']} session(s) active")
-            for s in sessions_data.get("sessions", []):
+            all_sessions = sessions_data.get("sessions", [])
+
+            from datetime import datetime, timedelta
+
+            active_cutoff = datetime.utcnow() - timedelta(minutes=30)
+            active_sessions = []
+            history_sessions = []
+            for s in all_sessions:
+                ts = s.get("last_active")
+                try:
+                    last_active_dt = datetime.fromisoformat(ts)
+                except Exception:
+                    last_active_dt = None
+
+                is_current = s["session_id"] == st.session_state.session_id
+                is_active = is_current or (last_active_dt is not None and last_active_dt >= active_cutoff)
+                if is_active:
+                    active_sessions.append(s)
+                else:
+                    history_sessions.append(s)
+
+            st.caption(
+                f"{len(active_sessions)} active · {len(history_sessions)} in history"
+            )
+
+            def render_session_card(s, section_key: str):
                 is_current = s["session_id"] == st.session_state.session_id
                 label = f"{'🟢' if is_current else '⚪'} `{s['session_id'][:8]}...`"
                 with st.expander(label, expanded=is_current):
@@ -188,7 +212,7 @@ with st.sidebar:
                         st.warning("⚠️ Paused for HitL review")
                     st.caption(f"Last active: {s.get('last_active', 'N/A')}")
                     if not is_current:
-                        if st.button("🔀 Switch to this session", key=f"switch_{s['session_id']}", use_container_width=True):
+                        if st.button("🔀 Switch to this session", key=f"switch_{section_key}_{s['session_id']}", use_container_width=True):
                             # Load conversation history from backend state
                             target_state = {}
                             try:
@@ -209,8 +233,8 @@ with st.sidebar:
                             st.rerun()
                     else:
                         st.success("✅ Current session")
-                    
-                    if st.button("🗑️ Delete Session", key=f"del_{s['session_id']}", use_container_width=True):
+
+                    if st.button("🗑️ Delete Session", key=f"del_{section_key}_{s['session_id']}", use_container_width=True):
                         try:
                             httpx.delete(f"{API_URL}/sessions/{s['session_id']}", timeout=5.0)
                             if is_current:
@@ -219,6 +243,20 @@ with st.sidebar:
                             st.rerun()
                         except Exception:
                             st.error("Failed to delete session.")
+
+            with st.expander("🟢 Active Sessions", expanded=True):
+                if active_sessions:
+                    for s in active_sessions:
+                        render_session_card(s, "active")
+                else:
+                    st.caption("No active sessions.")
+
+            with st.expander("🕘 Session History", expanded=False):
+                if history_sessions:
+                    for s in history_sessions:
+                        render_session_card(s, "history")
+                else:
+                    st.caption("No historical sessions yet.")
         else:
             st.caption("Could not fetch sessions.")
     except Exception:
