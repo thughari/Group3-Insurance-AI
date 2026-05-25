@@ -192,7 +192,7 @@ with st.sidebar:
             ]
 
             st.caption(
-                f"{len(active_sessions)} active · {len(history_sessions)} in history"
+                f"1 current · {len(history_sessions)} in history"
             )
 
             def render_session_card(s, section_key: str):
@@ -238,7 +238,7 @@ with st.sidebar:
                         except Exception:
                             st.error("Failed to delete session.")
 
-            with st.expander("🟢 Active Sessions", expanded=True):
+            with st.expander("🟢 Current Session", expanded=True):
                 if active_sessions:
                     for s in active_sessions:
                         render_session_card(s, "active")
