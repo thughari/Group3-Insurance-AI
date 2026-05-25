@@ -25,10 +25,10 @@ if "force_state_refresh" not in st.session_state:
 
 
 @st.cache_data(ttl=5, show_spinner=False)
-def fetch_state(_session_id: str):
+def fetch_state(session_id: str):
     """Fetch copilot state from backend. Cached for 5s to avoid redundant calls on Streamlit reruns."""
     try:
-        resp = httpx.get(f"{API_URL}/state/{_session_id}", timeout=10.0)
+        resp = httpx.get(f"{API_URL}/state/{session_id}", timeout=10.0)
         if resp.status_code == 200:
             return resp.json().get("state", {})
     except Exception:
@@ -172,6 +172,8 @@ with st.sidebar:
     if st.button("➕ Start new Session", use_container_width=True):
         st.session_state.session_id = str(uuid.uuid4())
         st.session_state.messages = []
+        st.session_state.force_state_refresh = True
+        fetch_state.clear()
         st.rerun()
 
     st.divider()
@@ -523,4 +525,7 @@ if prompt:
             full_response = st.write_stream(stream_chat(prompt))
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
+    # Ensure sidebar state (e.g., paused HitL flag) is fetched fresh after each turn.
+    st.session_state.force_state_refresh = True
+    fetch_state.clear()
     st.rerun()
