@@ -12,6 +12,26 @@ class GuardResult:
 
 
 # ── Tier 1: Domain-specific fast regex ──────────────────────────────────────
+
+ROLE_OVERRIDE_PATTERNS = [
+    r"\byou (?:are|re) no longer\b",
+    r"\bignore (?:all|the|your) (?:previous|prior) instructions\b",
+    r"\bact as (?:my )?(?:personal|daily) assistant\b",
+    r"\bfrom now on you are\b",
+    r"\bforget (?:all|your) (?:instructions|guardrails)\b",
+]
+
+OUT_OF_SCOPE_PATTERNS = {
+    "weather": r"\b(weather|temperature|forecast)\b",
+    "calendar": r"\b(schedule|calendar|meeting reminder|set reminder)\b",
+    "travel": r"\b(book (?:a )?(?:flight|hotel)|itinerary)\b",
+    "general_assistant": r"\b(personal assistant|daily assistant|life assistant)\b",
+}
+
+OUT_OF_SCOPE_MSG = (
+    "I’m a life-insurance assistant and can only help with insurance topics such as "
+    "policies, underwriting, beneficiaries, issuance, lapse/revival, and premium estimates."
+)
 # These are insurance-domain rules that no ML model can know better than us.
 BLOCK_PATTERNS = {
     "final underwriting decision": (
@@ -130,6 +150,24 @@ def apply_guardrails(text: str) -> GuardResult:
     for pattern, reason in BLOCK_PATTERNS.items():
         if pattern in lower:
             result = GuardResult(blocked=True, reason=reason)
+            guardrail_cache.set(text, result)
+            return result
+
+    for pattern in ROLE_OVERRIDE_PATTERNS:
+        if re.search(pattern, lower):
+            result = GuardResult(
+                blocked=True,
+                reason=(
+                    "I can’t follow requests to change my role or ignore safety instructions. "
+                    + OUT_OF_SCOPE_MSG
+                ),
+            )
+            guardrail_cache.set(text, result)
+            return result
+
+    for _, pattern in OUT_OF_SCOPE_PATTERNS.items():
+        if re.search(pattern, lower):
+            result = GuardResult(blocked=True, reason=OUT_OF_SCOPE_MSG)
             guardrail_cache.set(text, result)
             return result
 
