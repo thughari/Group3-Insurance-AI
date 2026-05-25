@@ -172,6 +172,8 @@ with st.sidebar:
     if st.button("➕ Start new Session", use_container_width=True):
         st.session_state.session_id = str(uuid.uuid4())
         st.session_state.messages = []
+        st.session_state.force_state_refresh = True
+        fetch_state.clear()
         st.rerun()
 
     st.divider()
