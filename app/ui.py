@@ -25,10 +25,10 @@ if "force_state_refresh" not in st.session_state:
 
 
 @st.cache_data(ttl=5, show_spinner=False)
-def fetch_state(_session_id: str):
+def fetch_state(session_id: str):
     """Fetch copilot state from backend. Cached for 5s to avoid redundant calls on Streamlit reruns."""
     try:
-        resp = httpx.get(f"{API_URL}/state/{_session_id}", timeout=10.0)
+        resp = httpx.get(f"{API_URL}/state/{session_id}", timeout=10.0)
         if resp.status_code == 200:
             return resp.json().get("state", {})
     except Exception:
