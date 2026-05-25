@@ -525,4 +525,7 @@ if prompt:
             full_response = st.write_stream(stream_chat(prompt))
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
+    # Ensure sidebar state (e.g., paused HitL flag) is fetched fresh after each turn.
+    st.session_state.force_state_refresh = True
+    fetch_state.clear()
     st.rerun()
